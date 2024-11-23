@@ -8,6 +8,11 @@ Make sure to install dependencies:
 
 ```bash
 # npm
+cd clients
+npm install
+
+&&
+cd server
 npm install
 
 # pnpm
