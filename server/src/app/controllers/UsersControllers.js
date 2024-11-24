@@ -97,6 +97,47 @@ class SiteControllers {
             res.status(500).json(err);
         }
     }
+
+    // [POST] /users/login
+    async login(req, res, next) {
+        const email = req.body.email;
+        const password = req.body.password;
+        try {
+            await pool.connect();
+            const result = await pool
+                .request()
+                .input('email', email)
+                .query('SELECT * FROM users WHERE email=@email');
+            const user = result.recordset[0];
+            if (!user) {
+                res.status(404).json({
+                    success: false,
+                    message: 'User not found',
+                });
+            } else {
+                const match = await bcrypt.compare(password, user.password);
+                if (match) {
+                    const token = jwt.sign(user, process.env.SECRET_KEY, {
+                        expiresIn: '2 days',
+                    });
+                    res.json({
+                        user,
+                        token,
+                    });
+                } else {
+                    res.status(403).json({
+                        success: false,
+                        message: 'Authenticate failed!! incorrect password',
+                    });
+                }
+            }
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                message: 'Internal Server Error',
+            });
+        }
+    }
 }
 
 module.exports = new SiteControllers();

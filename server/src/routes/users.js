@@ -5,6 +5,7 @@ const usersControllers = require('../app/controllers/UsersControllers');
 const verifyToken = require('../services/verifyToken');
 
 router.get('/auth', verifyToken, usersControllers.authUser);
+router.post('/login', usersControllers.login);
 router.post('/create', usersControllers.postUser);
 router.get('/', usersControllers.getUser);
 
