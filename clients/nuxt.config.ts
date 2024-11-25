@@ -10,6 +10,10 @@ export default defineNuxtConfig({
                     rel: 'stylesheet',
                     href: 'https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css',
                 },
+                {
+                    rel: 'stylesheet',
+                    href: 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css',
+                },
             ],
         },
     },
