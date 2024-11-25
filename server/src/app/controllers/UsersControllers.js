@@ -1,5 +1,4 @@
 const express = require('express');
-const router = express.Router();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const multer = require('multer');
@@ -24,7 +23,7 @@ class SiteControllers {
             destination: function (req, res, cb) {
                 cb(
                     null,
-                    'D:\\workspace\\nuxtjs\\fullstack\\clients\\static\\avatars'
+                    'D:\\workspace\\nuxtjs\\fullstack\\clients\\static\\avatar'
                 );
             },
             filename: function (req, file, cb) {

@@ -19,7 +19,9 @@
                         <i class="fa-solid fa-user"></i>
                     </span>
                 </p>
-                <span class="has-text-danger" v-if="$v.user.$error">{{ $v.user.$errors[0].$message }}</span>
+                <span class="has-text-danger" v-if="$v.user.$error">{{
+                    $v.user.$errors[0].$message
+                }}</span>
             </div>
             <div class="field">
                 <p class="control has-icons-left has-icons-right">
@@ -34,7 +36,9 @@
                         <i class="fas fa-envelope"></i>
                     </span>
                 </p>
-                <span class="has-text-danger" v-if="$v.email.$error">{{ $v.email.$errors[0].$message }}</span>
+                <span class="has-text-danger" v-if="$v.email.$error">{{
+                    $v.email.$errors[0].$message
+                }}</span>
             </div>
             <div class="field">
                 <p class="control has-icons-left">
@@ -49,11 +53,18 @@
                         <i class="fas fa-lock"></i>
                     </span>
                 </p>
-                <span class="has-text-danger" v-if="$v.password.$error">{{ $v.password.$errors[0].$message }}</span>
+                <span class="has-text-danger" v-if="$v.password.$error">{{
+                    $v.password.$errors[0].$message
+                }}</span>
             </div>
             <div class="file is-info has-name">
                 <label class="file-label">
-                    <input @change="onFileSelected" class="file-input" type="file" name="resume" />
+                    <input
+                        @change="onFileSelected"
+                        class="file-input"
+                        type="file"
+                        name="resume"
+                    />
                     <span class="file-cta">
                         <span class="file-icon">
                             <i class="fas fa-upload"></i>
@@ -63,14 +74,27 @@
                     <span class="file-name">{{ form.filename }}</span>
                 </label>
             </div>
-            <button type="submit" class="button is-primary">Sign in</button>
+            <button
+                :disabled="$v.$invalid"
+                type="submit"
+                class="button is-primary"
+            >
+                Sign in
+            </button>
         </form>
     </div>
 </template>
 
 <script setup>
 import { useVuelidate } from '@vuelidate/core';
-import { required, email, minLength, maxLength, helpers } from '@vuelidate/validators'
+import {
+    required,
+    email,
+    minLength,
+    maxLength,
+    helpers,
+} from '@vuelidate/validators';
+import axios from 'axios';
 
 definePageMeta({
     layout: 'custom',
@@ -84,14 +108,20 @@ const form = reactive({
     updatedAt: '',
     avatar: '',
     filename: '',
-    selectedFile: ''
+    selectedFile: '',
 });
 
 const rules = computed(() => ({
     user: {
         required: helpers.withMessage('Username is required', required),
-        minLength:  helpers.withMessage('length of name better than three character', minLength(3)),
-        maxLength: helpers.withMessage('length of name less than 20 character', maxLength(20)),
+        minLength: helpers.withMessage(
+            'length of name better than three character',
+            minLength(3)
+        ),
+        maxLength: helpers.withMessage(
+            'length of name less than 20 character',
+            maxLength(20)
+        ),
     },
     email: {
         required: helpers.withMessage('Email is required', required),
@@ -99,7 +129,10 @@ const rules = computed(() => ({
     },
     password: {
         required: helpers.withMessage('Password is required', required),
-        minLength: helpers.withMessage('Password must be at least 6 characters', minLength(6)),
+        minLength: helpers.withMessage(
+            'Password must be at least 6 characters',
+            minLength(6)
+        ),
     },
 }));
 
@@ -109,26 +142,37 @@ const onFileSelected = (e) => {
     form.selectedFile = e.target.files[0];
     console.log(form.selectedFile);
     form.filename = e.target.files[0].name;
-    
-}
+};
 
 const handleSubmit = async () => {
+    const formData = new FormData();
+    formData.append('user', form.user);
+    formData.append('email', form.email);
+    formData.append('password', form.password);
+    formData.append('role', form.role);
+
+    if (form.selectedFile) {
+        formData.append('avatar', form.selectedFile, form.selectedFile.name);
+    } else {
+        formData.append('avatar', form.avatar);
+    }
+
     $v.value.$touch();
     if ($v.value.$invalid) {
         return;
     }
     try {
-        const response = await fetch('http://localhost:8888/users/create', {
-            method: 'POST',
-            body: JSON.stringify(form),
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
-        if (response.ok) {
-            const data = await response.json();
-            console.log(data);
-            alert('User created successfully');
+        const response = await axios.post(
+            'http://localhost:8888/users/create',
+            formData,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+        if (response.status === 200) {
+            alert('User created successfully', response.data);
         } else {
             throw new Error('Failed to create user');
         }
@@ -150,7 +194,6 @@ const handleSubmit = async () => {
 .form-group {
     margin-bottom: 15px;
 }
-
 
 input {
     width: 100%;
