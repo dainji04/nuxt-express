@@ -1,21 +1,25 @@
 <template>
     <div class="signup-container" style="margin-top: 50px">
         <h1>Sign Up</h1>
-        <form @submit.prevent="handleSubmit">
+        <form
+            @submit="handleSubmit"
+            method="POST"
+            action="localhost:8888/users/create"
+        >
             <div class="form-group">
                 <label for="username">Username:</label>
-                <input type="text" id="username" v-model="username" required />
+                <input v-model="form.user" type="text" id="username" required />
             </div>
             <div class="form-group">
                 <label for="email">Email:</label>
-                <input type="email" id="email" v-model="email" required />
+                <input type="email" id="email" v-model="form.email" required />
             </div>
             <div class="form-group">
                 <label for="password">Password:</label>
                 <input
                     type="password"
                     id="password"
-                    v-model="password"
+                    v-model="form.password"
                     required
                 />
             </div>
@@ -26,13 +30,37 @@
 
 <script setup>
 definePageMeta({
-    layout: "custom",
+    layout: 'custom',
 });
-const user = ref("");
-const email = ref("");
-const password = ref("");
-const handleSubmit = () => {
-    console.log("Form submitted", user.value, email.value, password.value);
+const form = reactive({
+    user: '',
+    email: '',
+    password: '',
+    role: 'user',
+    createdAt: '',
+    updatedAt: '',
+    avatar: '',
+});
+
+const handleSubmit = async () => {
+    try {
+        const response = await fetch('http://localhost:8888/users/create', {
+            method: 'POST',
+            body: JSON.stringify(form),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+        if (response.ok) {
+            const data = await response.json();
+            console.log(data);
+            alert('User created successfully');
+        } else {
+            throw new Error('Failed to create user');
+        }
+    } catch (error) {
+        console.error(error);
+    }
 };
 </script>
 
