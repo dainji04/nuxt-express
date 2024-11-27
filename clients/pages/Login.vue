@@ -1,12 +1,29 @@
 <script setup>
+import axios from 'axios';
+
 definePageMeta({
-    layout: "custom",
+    layout: 'custom',
 });
-const user = ref("");
-const password = ref("");
-const handleSubmit = () => {
-    console.log("Form submitted", user.value, password.value);
-    useRouter().replace("/");
+
+const formData = reactive({
+    email: '',
+    password: '',
+});
+
+const handleSubmit = async () => {
+    try {
+        const response = await axios.post(
+            'http://localhost:8888/users/login',
+            formData
+        );
+        console.log('Response:', response.data);
+
+        localStorage.setItem('Authtoken', response.data.token);
+    } catch (error) {
+        console.error('Error:', error);
+    }
+
+    // useRouter().replace('/');
 };
 </script>
 
@@ -16,16 +33,11 @@ const handleSubmit = () => {
         <form @submit.prevent="handleSubmit">
             <div class="form-group">
                 <label for="username">Username:</label>
-                <input type="text" id="username" v-model="username" required />
+                <input type="email" v-model="formData.email" required />
             </div>
             <div class="form-group">
                 <label for="password">Password:</label>
-                <input
-                    type="password"
-                    id="password"
-                    v-model="password"
-                    required
-                />
+                <input type="password" v-model="formData.password" required />
             </div>
             <button type="submit">Login</button>
         </form>
