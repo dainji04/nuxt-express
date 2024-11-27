@@ -1,11 +1,10 @@
-const express = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const multer = require('multer');
 
 const { pool } = require('../models/configDb');
 
-class SiteControllers {
+class UsersControllers {
     // [GET] /users
     async getUser(req, res) {
         try {
@@ -77,14 +76,15 @@ class SiteControllers {
 
     // [GET] /users/auth
     async authUser(req, res) {
-        const email = req.decoded.user.email;
+        console.log('req.decoded: ', req.decoded);
+        const _id = req.decoded._id;
 
         try {
             await pool.connect();
             const result = await pool
                 .request()
                 .input('email', email)
-                .query('SELECT * FROM users WHERE email=@email');
+                .query(`SELECT * FROM users WHERE _id=${_id}`);
             const user = result.recordset[0];
 
             if (!user) {
@@ -139,4 +139,4 @@ class SiteControllers {
     }
 }
 
-module.exports = new SiteControllers();
+module.exports = new UsersControllers();
