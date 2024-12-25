@@ -19,6 +19,9 @@ const handleSubmit = async () => {
         console.log('Response:', response.data);
 
         localStorage.setItem('Authtoken', response.data.token);
+        localStorage.setItem('User', JSON.stringify(response.data.user));
+
+        useRouter().push('/');
     } catch (error) {
         console.error('Error:', error);
     }
@@ -32,8 +35,8 @@ const handleSubmit = async () => {
         <h1>Login</h1>
         <form @submit.prevent="handleSubmit">
             <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="email" v-model="formData.email" required />
+                <label for="email">Email:</label>
+                <input type="text" v-model="formData.email" required />
             </div>
             <div class="form-group">
                 <label for="password">Password:</label>

@@ -1,3 +1,36 @@
+<script lang="ts" setup>
+import axios from 'axios';
+
+const getAuthUser = async () => {
+    try {
+        const response = await axios.get('http://localhost:8888/users/auth', {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('Authtoken')}`,
+            },
+        });
+        console.log('Response:', response.data);
+        return response.data;
+    } catch (error) {
+        console.error('Error:', error);
+    }
+};
+
+const checkLogin = () => {
+    const token = localStorage.getItem('Authtoken');
+    if (token) {
+        return true;
+    } else {
+        return false;
+    }
+};
+
+const logout = () => {
+    localStorage.removeItem('Authtoken');
+    localStorage.removeItem('User');
+    window.location.href = '/';
+};
+</script>
+
 <template>
     <div class="header">
         <nav class="navbar" role="navigation" aria-label="main navigation">
@@ -65,11 +98,26 @@
                 <div class="navbar-end">
                     <div class="navbar-item">
                         <div class="buttons">
-                            <nuxt-link to="/Signup" class="button is-primary">
+                            <nuxt-link
+                                to="/Signup"
+                                class="button is-primary"
+                                v-if="!checkLogin()"
+                            >
                                 <strong>Sign up</strong>
                             </nuxt-link>
-                            <nuxt-link to="/Login" class="button is-light">
+                            <nuxt-link
+                                to="/Login"
+                                class="button is-light"
+                                v-if="!checkLogin()"
+                            >
                                 Log in
+                            </nuxt-link>
+                            <nuxt-link
+                                class="button is-light"
+                                @click="logout()"
+                                v-if="checkLogin()"
+                            >
+                                Log out
                             </nuxt-link>
                         </div>
                     </div>
